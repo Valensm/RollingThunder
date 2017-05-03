@@ -1,0 +1,124 @@
+
+
+    internal class MainArgs
+    {
+        [ErrorHandle]
+        public void OnError(ErrorContext context)
+        {
+            //Parsing errors
+            //Validation errors
+            //Definition errors - like duplicates definitions which lead to ambiguity, or duplicate helps, defaults, bags, or missing something in definition.
+        }
+
+        [Mutual("G1")]
+        [Name("o1")]
+        public Verb1 V1 { get; set; }
+
+        [Mutual("G1")]
+        [Name("o2")]
+        public Verb2 V2 { get; set; }
+
+        [DefaultVerb]
+        public Verb4 V4 { get; set; }
+
+        [VerbBag]
+        [Range(-2, 10)]
+        public IEnumerable<int> VerbBag { get; set; }
+
+        [Ignore]
+        public int MyProperty { get; set; }
+
+        [Validate]
+        public IEnumerable<Error> Validate(ErrorContext context)
+        {
+        }
+    }
+
+    internal class Verb1
+    {
+        [Name("oo1", LongName = "option001")]
+        [Minimum(5, "At least {0}.")]
+        public int Name { get; set; }
+
+        [Name("oo2")]
+        [MaxLength(20, "Cannot be longer than {0} characters.")]
+        public IEnumerable<string> Values { get; set; }
+
+        [Validate]
+        public IEnumerable<Error> Validate(ErrorContext context)
+        {
+        }
+    }
+
+    internal class Verb2
+    {
+        [Name("oo3")]
+        [Default(true)]
+        public bool IsAllowed { get; set; }
+
+        [Ignore]
+        public int MyProperty { get; set; }
+    }
+
+    internal class Verb4
+    {
+        [Name("p")]
+        [Required]
+        [Regex("a regex expresion", "Value {0} hasn't passed.")]
+        public bool IsEnabled { get; set; }
+
+        [Reuired("Provide a value for the VALUE.")]
+        [Name("q")]
+        [Maximum(60, "Provide a value max of {0}.")]
+        public int Value { get; set; }
+
+        [Name("r")]
+        [MinLength(2, "Must be at least {0} characters.")]
+        [StringLength(3, 15, "Value must be at least {0} and {1} at max.")]
+        public IEnumerable<string> Values { get; set; }
+    }
+}
+
+/*
+ * Lets' have APP = app.exe
+ * APP 1 2 3 4 = N unknown args (verbs) and/or predefined verbs or combination of both.
+ * APP 1 2 3 4 -p = switch
+ * APP 1 2 3 4 -p -q value = with a value
+ * APP 1 2 3 4 -p -q value -r v1 v2 v3 = with a multiple values
+ * APP 1 2 3 4 -p -q value -r v1 v2 v3 -o1 -oo1 ahoj -oo2 b c d <OR> APP 1 2 3 4 -p -q value -r v1 v2 v3 -o2 -oo3 = o1 and o2 determines groups of possible args
+ *
+ * validation for various types (maybe custom complex types???).
+ * validation for allowed values - range, length, enums, required, optional, etc.
+ *		min, max, range, list, enum, regex
+ *		string length range, min length, max length
+ *		required/optional, default value
+ *		override short name, long name
+ *		ignore member
+ *		default verb
+ *		mutual groups
+ *		error handler/help screen delegate
+ *		custom validation delegate
+ *		
+ * many unknown verbs = many unknown values
+ * verb enumeration - white list
+ * help screen.
+ * custom validation and error handling for help screen.
+ * short names and long names.
+ *
+ * Defined in class.
+ * Maybe attributes/fluent api.
+ * 
+ * string, char, int, uint, short, ushort, long, ulong, byte, sbyte, float, double, decimal, bool
+ * ENUMS
+ * nullable
+ * byte[] is file - the value of the parameter is path to a file
+ *		on disk, ftp, http, sftp, https, REST response content
+ *		configure via using extension like UseRest() UseFtp() UseHttp() UseDisk() UseHttps() UseFtps()
+ * IEnumerable<> support
+ * If line contains something which cannot be mapped, then error.
+
+ * TODO: DATETIME, Dictionary
+        Error if one arg is specified more than once
+        Enum support
+ */
+ 
